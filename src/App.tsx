@@ -1,22 +1,18 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import sonomaImage from "./assets/images/sonoma.png";
 import sendIcon from "./assets/images/sendIcon.svg";
 
 const App = () => {
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        // Send message to Electron to hide window
-        if (window.electronAPI) {
-          window.electronAPI.hideWindow();
-        }
-      }
-    };
+  const [activeApp, setActiveApp] = useState<string | null>(null);
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
+  useEffect(() => {
+    // Listen for active app detection from Electron
+    if (window.electronAPI) {
+      window.electronAPI.onActiveAppDetected((appName: string) => {
+        console.log("Active app detected:", appName);
+        setActiveApp(appName);
+      });
+    }
   }, []);
 
   return (
@@ -34,7 +30,7 @@ const App = () => {
         <div className="h-auto w-full px-2 text-white text-[14px] rounded-[50px] flex items-center justify-center gap-2">
           <input
             type="text"
-            placeholder="Ask me anything about Figma..."
+            placeholder={`Ask me anything about ${activeApp}...`}
             className="w-[90%] py-2 px-4 rounded-[50px] bg-white/10 outline-none focus:outline-none focus:ring-2 focus:ring-white/20 hover:shadow-[0_0_15px_rgba(217,70,239,0.5)] transition-shadow duration-300"
           />
 

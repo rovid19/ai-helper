@@ -1,9 +1,15 @@
-import { app, BrowserWindow, screen, globalShortcut } from "electron";
+import { app, BrowserWindow, screen, globalShortcut, ipcMain } from "electron";
+import path from "path";
+import { fileURLToPath } from "url";
 import {
-  hotReload,
-  shortcutToHideWindow,
-  shortcutToShowWindow,
-} from "./utils.js";
+  registerShowShortcut,
+  registerHideShortcut,
+} from "./services/shortcuts.js";
+import { setupHotReload } from "./services/hotReload.js";
+import { DEVELOPMENT, WINDOW_CONFIG } from "./config/constants.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 let win; // Store window reference globally
 
@@ -16,27 +22,36 @@ async function createWindow() {
     height: height,
     x: 0,
     y: 0,
-    resizable: true,
-    show: false, // Don't show window initially
+    resizable: WINDOW_CONFIG.RESIZABLE,
+    show: WINDOW_CONFIG.SHOW_INITIALLY,
     webPreferences: {
-      nodeIntegration: true, // enables using Node APIs in renderer
+      nodeIntegration: WINDOW_CONFIG.NODE_INTEGRATION,
+      contextIsolation: WINDOW_CONFIG.CONTEXT_ISOLATION,
+      preload: path.join(__dirname, "preload.js"),
     },
   });
-  console.log("listenToHideWindow1");
+
   // Load Vite dev server during development
   win.loadURL("http://localhost:5173");
 
   // Open DevTools in development mode
-  if (process.env.NODE_ENV === "development") {
+  if (DEVELOPMENT.DEV_TOOLS_ENABLED) {
     win.webContents.openDevTools();
   }
 
-  // Hot reload for development
-  hotReload(win);
+  // Setup hot reload for development
+  await setupHotReload(win);
 
-  // Register global shortcut
-  shortcutToShowWindow(win);
-  shortcutToHideWindow(win);
+  // Register global shortcuts
+  await registerShowShortcut(win);
+  await registerHideShortcut(win);
+
+  // Handle IPC messages
+  ipcMain.on("hide-window", () => {
+    if (win) {
+      win.hide();
+    }
+  });
 
   // Hide window instead of closing it
   win.on("close", (event) => {
