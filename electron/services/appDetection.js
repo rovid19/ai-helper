@@ -25,3 +25,31 @@ export const getActiveApplication = async () => {
     return null;
   }
 };
+
+/**
+ * Get the current browser URL if the active app is a browser
+ * @param {string} appName - The active application name
+ * @returns {Promise<string|null>} The current URL or null if not a browser
+ */
+export const getBrowserURL = async (appName) => {
+  const browsers = {
+    Safari:
+      'tell application "Safari" to get URL of current tab of front window',
+    "Google Chrome":
+      'tell application "Google Chrome" to get URL of active tab of front window',
+    Firefox: 'tell application "Firefox" to get URL of current tab',
+  };
+
+  const script = browsers[appName];
+  if (!script) return null;
+
+  try {
+    const { stdout } = await execAsync(`osascript -e '${script}'`);
+    const url = stdout.trim();
+    console.log("Browser URL:", url);
+    return url;
+  } catch (error) {
+    console.error("Error getting browser URL:", error);
+    return null;
+  }
+};

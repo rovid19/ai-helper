@@ -1,17 +1,50 @@
 import { app, BrowserWindow, screen, globalShortcut, ipcMain } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
+import { spawn } from "child_process";
 import {
   registerShowShortcut,
   registerHideShortcut,
 } from "./services/shortcuts.js";
 import { setupHotReload } from "./services/hotReload.js";
+import { captureScreenshot } from "./services/screenshot.js";
 import { DEVELOPMENT, WINDOW_CONFIG } from "./config/constants.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let win; // Store window reference globally
+
+// Register IPC handlers at module level
+ipcMain.handle("capture-screenshot", async () => {
+  console.log("capture-screenshot in main");
+  try {
+    const screenshot = await captureScreenshot(win);
+    return screenshot;
+  } catch (error) {
+    console.error("Error capturing screenshot:", error);
+    throw error;
+  }
+});
+
+// Simple overlay handler
+ipcMain.handle("start-simple-overlay", async () => {
+  try {
+    await simpleOverlayService.startOverlay();
+    return { success: true };
+  } catch (error) {
+    console.error("Error starting simple overlay:", error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle("launch-native-overlay", async () => {
+  const overlayAppPath = path.join(
+    __dirname,
+    "../native/Ai Overlay Instructions.app"
+  );
+  spawn("open", [overlayAppPath]);
+});
 
 async function createWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();

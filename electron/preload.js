@@ -3,8 +3,26 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld("electronAPI", {
   hideWindow: () => ipcRenderer.send("hide-window"),
   onActiveAppDetected: (callback) => {
-    ipcRenderer.on("active-app-detected", (event, appName) => {
-      callback(appName);
+    // Remove any existing listeners first
+    ipcRenderer.removeAllListeners("active-app-detected");
+
+    // Add the new listener
+    ipcRenderer.on("active-app-detected", (event, data) => {
+      console.log("Preload received data:", data);
+      callback(data);
     });
+  },
+  captureScreenshot: async () => {
+    try {
+      const result = await ipcRenderer.invoke("capture-screenshot");
+      console.log("Preload received screenshot result");
+      return result;
+    } catch (error) {
+      console.error("Error in preload captureScreenshot:", error);
+      throw error;
+    }
+  },
+  launchNativeOverlay: async () => {
+    await ipcRenderer.invoke("launch-native-overlay");
   },
 });

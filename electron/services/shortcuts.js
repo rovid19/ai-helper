@@ -1,5 +1,5 @@
 import { globalShortcut } from "electron";
-import { getActiveApplication } from "./appDetection.js";
+import { getActiveApplication, getBrowserURL } from "./appDetection.js";
 import { SHORTCUTS } from "../config/constants.js";
 
 /**
@@ -15,12 +15,18 @@ export const registerShowShortcut = async (win) => {
     // Get the active application BEFORE showing our window
     const activeApp = await getActiveApplication();
 
+    // If it's a browser, get the current URL
+    const browserURL = activeApp ? await getBrowserURL(activeApp) : null;
+
     if (win) {
       win.show();
       win.focus();
 
-      // Send the active app info to the renderer
-      win.webContents.send("active-app-detected", activeApp);
+      // Send both active app and browser URL to the renderer
+      win.webContents.send("active-app-detected", {
+        app: activeApp,
+        webApp: browserURL,
+      });
     }
   });
 
