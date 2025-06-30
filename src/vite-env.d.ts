@@ -9,5 +9,6 @@ interface Window {
     captureScreenshot: () => Promise<string>;
     startSimpleOverlay: () => Promise<{ success: boolean; error?: string }>;
     launchNativeOverlay: () => Promise<void>;
+    writeStepsToFile: (steps: any) => Promise<{ success: boolean }>;
   };
 }

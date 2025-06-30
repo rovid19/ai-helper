@@ -1,0 +1,13 @@
+"filename", "language", "TypeScript JSX", "TypeScript", "CSS", "XML", "comment", "blank", "total"
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/App.css", "CSS", 0, 0, 1, 0, 0, 1, 2
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/App.tsx", "TypeScript JSX", 15, 0, 0, 0, 0, 3, 18
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/assets/images/sendIcon.svg", "XML", 0, 0, 0, 4, 0, 1, 5
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/components/chatUi.tsx", "TypeScript JSX", 75, 0, 0, 0, 11, 18, 104
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/components/deepLens.tsx", "TypeScript JSX", 29, 0, 0, 0, 0, 3, 32
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/hooks/useAppDetection.tsx", "TypeScript JSX", 30, 0, 0, 0, 0, 8, 38
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/index.css", "CSS", 0, 0, 4, 0, 0, 2, 6
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/main.tsx", "TypeScript JSX", 4, 0, 0, 0, 0, 2, 6
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/services/openAi/chatGpt.ts", "TypeScript", 0, 89, 0, 0, 55, 16, 160
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/services/openAi/prompts.ts", "TypeScript", 0, 43, 0, 0, 0, 11, 54
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/vite-env.d.ts", "TypeScript", 0, 12, 0, 0, 1, 2, 15
+"Total", "-", 153, 144, 5, 4, 67, 67, 440

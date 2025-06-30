@@ -1,0 +1,45 @@
+Date : 2025-06-29 14:14:38
+Directory : /Users/rock/Documents/Projekti/ai-helper/no-name/src
+Total : 11 files,  306 codes, 67 comments, 67 blanks, all 440 lines
+
+Languages
++----------------+------------+------------+------------+------------+------------+
+| language       | files      | code       | comment    | blank      | total      |
++----------------+------------+------------+------------+------------+------------+
+| TypeScript JSX |          5 |        153 |         11 |         34 |        198 |
+| TypeScript     |          3 |        144 |         56 |         29 |        229 |
+| CSS            |          2 |          5 |          0 |          3 |          8 |
+| XML            |          1 |          4 |          0 |          1 |          5 |
++----------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                            | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                               |         11 |        306 |         67 |         67 |        440 |
+| . (Files)                                                                       |          5 |         36 |          1 |         10 |         47 |
+| assets                                                                          |          1 |          4 |          0 |          1 |          5 |
+| assets/images                                                                   |          1 |          4 |          0 |          1 |          5 |
+| components                                                                      |          2 |        104 |         11 |         21 |        136 |
+| hooks                                                                           |          1 |         30 |          0 |          8 |         38 |
+| services                                                                        |          2 |        132 |         55 |         27 |        214 |
+| services/openAi                                                                 |          2 |        132 |         55 |         27 |        214 |
++---------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| filename                                                                        | language       | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| /Users/rock/Documents/Projekti/ai-helper/no-name/src/App.css                    | CSS            |          1 |          0 |          1 |          2 |
+| /Users/rock/Documents/Projekti/ai-helper/no-name/src/App.tsx                    | TypeScript JSX |         15 |          0 |          3 |         18 |
+| /Users/rock/Documents/Projekti/ai-helper/no-name/src/assets/images/sendIcon.svg | XML            |          4 |          0 |          1 |          5 |
+| /Users/rock/Documents/Projekti/ai-helper/no-name/src/components/chatUi.tsx      | TypeScript JSX |         75 |         11 |         18 |        104 |
+| /Users/rock/Documents/Projekti/ai-helper/no-name/src/components/deepLens.tsx    | TypeScript JSX |         29 |          0 |          3 |         32 |
+| /Users/rock/Documents/Projekti/ai-helper/no-name/src/hooks/useAppDetection.tsx  | TypeScript JSX |         30 |          0 |          8 |         38 |
+| /Users/rock/Documents/Projekti/ai-helper/no-name/src/index.css                  | CSS            |          4 |          0 |          2 |          6 |
+| /Users/rock/Documents/Projekti/ai-helper/no-name/src/main.tsx                   | TypeScript JSX |          4 |          0 |          2 |          6 |
+| /Users/rock/Documents/Projekti/ai-helper/no-name/src/services/openAi/chatGpt.ts | TypeScript     |         89 |         55 |         16 |        160 |
+| /Users/rock/Documents/Projekti/ai-helper/no-name/src/services/openAi/prompts.ts | TypeScript     |         43 |          0 |         11 |         54 |
+| /Users/rock/Documents/Projekti/ai-helper/no-name/src/vite-env.d.ts              | TypeScript     |         12 |          1 |          2 |         15 |
+| Total                                                                           |                |        306 |         67 |         67 |        440 |
++---------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+

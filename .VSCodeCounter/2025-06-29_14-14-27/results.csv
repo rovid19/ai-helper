@@ -1,0 +1,11 @@
+"filename", "language", "JavaScript", "comment", "blank", "total"
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/config/constants.js", "JavaScript", 14, 1, 3, 18
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/main.js", "JavaScript", 99, 14, 19, 132
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/preload.js", "JavaScript", 34, 2, 3, 39
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/services/appDetection.js", "JavaScript", 40, 9, 7, 56
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/services/hotReload.js", "JavaScript", 27, 6, 6, 39
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/services/screenshot.js", "JavaScript", 22, 6, 6, 34
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/services/shortcuts.js", "JavaScript", 38, 11, 11, 60
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/utils/helpers.js", "JavaScript", 0, 0, 1, 1
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/utils/index.js", "JavaScript", 1, 1, 1, 3
+"Total", "-", 275, 50, 57, 382

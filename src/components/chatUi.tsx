@@ -3,10 +3,13 @@ import sonomaImage from "../assets/images/sonoma.png";
 import sendIcon from "../assets/images/sendIcon.svg";
 import useAppDetection from "../hooks/useAppDetection";
 import ChatGPTService from "../services/openAi/chatGpt";
+import DeepLens from "./deepLens";
+import { DeepLensService } from "../services/deepLens.ts";
 
 const chatUi = () => {
   const { activeApp, activeWebApp } = useAppDetection();
   const [userInput, setUserInput] = useState("");
+  const [isDeepLensOn, setIsDeepLensOn] = useState(false);
 
   const getPlaceholderText = () => {
     if (activeWebApp) {
@@ -27,29 +30,33 @@ const chatUi = () => {
       // Hide the Electron window first
       window.electronAPI.hideWindow();
 
-      // Wait a moment for the window to hide
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Capture screenshot of the current app if deepLens is on
+      const screenShot = isDeepLensOn
+        ? await new DeepLensService().analyzeImage()
+        : null;
 
-      // Capture screenshot of the current app (now that Electron is hidden)
-      const screenshotBase64 = await window.electronAPI.captureScreenshot();
-      console.log("Screenshot captured, size:", screenshotBase64.length);
-
-      // Start the simple overlay
-      await window.electronAPI.launchNativeOverlay();
+      console.log(screenShot);
 
       // Create ChatGPT service instance
       const chatGPT = new ChatGPTService();
 
       // Make the API request with context
-      const response = await chatGPT.analyzeScreenshot(
-        screenshotBase64,
+      const steps = await chatGPT.analyze(
+        screenShot,
         userInput,
         activeApp || undefined,
         activeWebApp || undefined
       );
 
-      console.log("ChatGPT response:", response);
+      console.log("steps", steps);
 
+      // Start the native overlay
+      await window.electronAPI.launchNativeOverlay();
+
+      // Write steps to /tmp/overlay_steps.json for the native overlay
+      await window.electronAPI.writeStepsToFile(steps);
+
+      console.log("Steps:", steps);
       // Clear the input after successful request
       setUserInput("");
     } catch (error) {
@@ -61,7 +68,7 @@ const chatUi = () => {
     <div className="bg-transparent h-screen flex items-center justify-center p-4 relative">
       <img src={sonomaImage} alt="sonoma" className="w-full h-full absolute " />
 
-      <div className="h-[20%] w-[50%] rounded-[50px] bg-black/30  backdrop-blur-[35px] border  border-white/20  p-8 flex flex-col gap-2">
+      <div className="h-[20%] w-[50%] rounded-[50px] bg-black/20  backdrop-blur-[35px] border  border-white/20  p-8 flex flex-col gap-2">
         {/* Header */}
         <div className="w-full px-2 text-white text-[28px]">
           {" "}
@@ -87,8 +94,9 @@ const chatUi = () => {
         </div>
 
         {/* footer */}
-        <div className=" w-full px-2 text-[#8B8B8B] text-[10px]">
+        <div className=" w-full px-2 text-[#8B8B8B] text-[10px] flex justify-between">
           <h3 className="">Press Shift + S to open settings </h3>
+          <DeepLens isOn={isDeepLensOn} setIsOn={setIsDeepLensOn} />
         </div>
       </div>
     </div>

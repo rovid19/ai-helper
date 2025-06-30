@@ -2,6 +2,7 @@ import { app, BrowserWindow, screen, globalShortcut, ipcMain } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 import { spawn } from "child_process";
+import fs from "fs";
 import {
   registerShowShortcut,
   registerHideShortcut,
@@ -23,6 +24,19 @@ ipcMain.handle("capture-screenshot", async () => {
     return screenshot;
   } catch (error) {
     console.error("Error capturing screenshot:", error);
+    throw error;
+  }
+});
+
+// Write steps to file handler
+ipcMain.handle("write-steps-to-file", async (event, steps) => {
+  console.log("write-steps-to-file in main");
+  try {
+    fs.writeFileSync("/tmp/overlay_steps.json", JSON.stringify(steps), "utf-8");
+    console.log("Steps written to /tmp/overlay_steps.json successfully");
+    return { success: true };
+  } catch (error) {
+    console.error("Error writing steps to file:", error);
     throw error;
   }
 });

@@ -25,4 +25,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
   launchNativeOverlay: async () => {
     await ipcRenderer.invoke("launch-native-overlay");
   },
+  writeStepsToFile: async (steps) => {
+    try {
+      const result = await ipcRenderer.invoke("write-steps-to-file", steps);
+      console.log("Preload received write steps result");
+      return result;
+    } catch (error) {
+      console.error("Error in preload writeStepsToFile:", error);
+      throw error;
+    }
+  },
 });
