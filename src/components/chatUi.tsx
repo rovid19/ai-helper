@@ -1,15 +1,21 @@
 import React, { useState } from "react";
 import sonomaImage from "../assets/images/sonoma.png";
 import sendIcon from "../assets/images/sendIcon.svg";
-import useAppDetection from "../hooks/useAppDetection";
+import { useAppDetectionStore } from "../stores/appDetectionStore";
+import { useStepStore } from "../stores/stepStore";
 import ChatGPTService from "../services/openAi/chatGpt";
 import DeepLens from "./deepLens";
 import { DeepLensService } from "../services/deepLens.ts";
+import useAppDetection from "../hooks/useAppDetection.tsx";
 
 const chatUi = () => {
-  const { activeApp, activeWebApp } = useAppDetection();
+  const activeApp = useAppDetectionStore((state) => state.activeApp);
+  const activeWebApp = useAppDetectionStore((state) => state.activeWebApp);
+  const setUserQuestion = useStepStore((state) => state.setUserQuestion);
   const [userInput, setUserInput] = useState("");
   const [isDeepLensOn, setIsDeepLensOn] = useState(false);
+
+  useAppDetection();
 
   const getPlaceholderText = () => {
     if (activeWebApp) {
@@ -24,9 +30,10 @@ const chatUi = () => {
   };
 
   const handleSubmitUserInput = async () => {
-    console.log(activeApp, activeWebApp);
-
     try {
+      // Store the user question
+      setUserQuestion(userInput);
+
       // Hide the Electron window first
       window.electronAPI.hideWindow();
 
@@ -34,8 +41,6 @@ const chatUi = () => {
       const screenShot = isDeepLensOn
         ? await new DeepLensService().analyzeImage()
         : null;
-
-      console.log(screenShot);
 
       // Create ChatGPT service instance
       const chatGPT = new ChatGPTService();
@@ -48,15 +53,12 @@ const chatUi = () => {
         activeWebApp || undefined
       );
 
-      console.log("steps", steps);
-
       // Start the native overlay
       await window.electronAPI.launchNativeOverlay();
 
       // Write steps to /tmp/overlay_steps.json for the native overlay
       await window.electronAPI.writeStepsToFile(steps);
 
-      console.log("Steps:", steps);
       // Clear the input after successful request
       setUserInput("");
     } catch (error) {

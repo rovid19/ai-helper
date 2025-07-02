@@ -1,37 +1,22 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useAppDetectionStore } from "../stores/appDetectionStore";
 
-type appDetectionReturn = {
-  activeApp: string | null;
-  activeWebApp: string | null;
-};
-
-const useAppDetection = (): appDetectionReturn => {
-  const [activeApp, setActiveApp] = useState<string | null>(null);
-  const [activeWebApp, setActiveWebApp] = useState<string | null>(null);
+const useAppDetection = () => {
+  const setActiveApp = useAppDetectionStore((state) => state.setActiveApp);
+  const setActiveWebApp = useAppDetectionStore(
+    (state) => state.setActiveWebApp
+  );
 
   useEffect(() => {
-    console.log("Setting up app detection listener");
-
     if (window.electronAPI) {
       window.electronAPI.onActiveAppDetected(
         (data: { app: string | null; webApp: string | null }) => {
-          console.log("Active app detected:", data);
           setActiveApp(data.app);
-
-          if (data.webApp) {
-            setActiveWebApp(data.webApp);
-          } else {
-            setActiveWebApp(null);
-          }
+          setActiveWebApp(data.webApp ?? null);
         }
       );
     }
-  }, []);
-
-  return {
-    activeApp,
-    activeWebApp,
-  };
+  }, [setActiveApp, setActiveWebApp]);
 };
 
 export default useAppDetection;

@@ -1,4 +1,5 @@
 import Prompts from "./prompts";
+import { useStepStore } from "../../stores/stepStore";
 
 class ChatGPTService {
   private apiKey: string = import.meta.env.VITE_OPENAI_API_KEY;
@@ -11,7 +12,7 @@ class ChatGPTService {
     userQuestion: string,
     activeApp?: string,
     activeWebApp?: string
-  ): Promise<string[] | string[][]> {
+  ): Promise<{ targetText: string | null; description: string }[]> {
     if (screenshotBase64) {
       this.deepLens = true;
       return this.screenshotAnalyze(
@@ -29,8 +30,7 @@ class ChatGPTService {
     userQuestion: string,
     activeApp?: string,
     activeWebApp?: string
-  ): Promise<string[] | string[][]> {
-    console.log("promptAnalyze");
+  ): Promise<{ targetText: string | null; description: string }[]> {
     this.determineContextPrompt(userQuestion, activeApp, activeWebApp);
 
     const messages = [
@@ -48,16 +48,8 @@ class ChatGPTService {
     userQuestion: string,
     activeApp?: string,
     activeWebApp?: string
-  ): Promise<string[] | string[][]> {
-    console.log("screenshotAnalyze");
-    console.log(
-      `Analyzing screenshot of size: ~${Math.round(
-        screenshotBase64.length * 0.75
-      )} bytes`
-    );
-
+  ): Promise<{ targetText: string | null; description: string }[]> {
     this.determineContextPrompt(userQuestion, activeApp, activeWebApp);
-
     const messages = [
       {
         role: "user",
@@ -85,6 +77,14 @@ class ChatGPTService {
     activeApp?: string,
     activeWebApp?: string
   ): void {
+    // Check if user is stuck on a step
+    const userStuckOn = useStepStore.getState().userStuckOn;
+    if (userStuckOn) {
+      this.contextPrompt = new Prompts("userStuck").getContextPrompt(
+        userQuestion
+      );
+      return;
+    }
     if (activeWebApp) {
       this.contextPrompt = new Prompts("activeWebApp").getContextPrompt(
         userQuestion,
@@ -98,7 +98,11 @@ class ChatGPTService {
     }
   }
 
-  private async makeApiCall(messages: any[]): Promise<string[][] | string[]> {
+  private async makeApiCall(
+    messages: any[]
+  ): Promise<{ targetText: string | null; description: string }[]> {
+    console.log(this.contextPrompt);
+
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -106,9 +110,9 @@ class ChatGPTService {
         Authorization: `Bearer ${this.apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "gpt-4o",
         messages,
-        max_tokens: 500,
+        max_tokens: 1000,
       }),
     });
 
@@ -123,71 +127,43 @@ class ChatGPTService {
 
     const data = await response.json();
 
+    console.log("Raw GPT response:", data.choices[0].message.content);
+
     if (!data.choices || !data.choices[0] || !data.choices[0].message) {
       throw new Error("Unexpected API response structure");
     }
 
-    const steps = this.parseStepsFromResponse(data.choices[0].message.content);
-    if (this.deepLens) {
-      const coordinates = this.parseCoordinatesFromResponse(
-        data.choices[0].message.content
-      );
-      return [[...steps], [...coordinates]];
-    } else {
-      return steps;
-    }
+    const steps = this.parseStepsWithTargetText(
+      data.choices[0].message.content
+    );
+    console.log("Parsed steps:", steps);
+    useStepStore.getState().setSteps(steps);
+    return steps;
   }
 
-  private parseStepsFromResponse(response: string): string[] {
+  private parseStepsWithTargetText(
+    response: string
+  ): { targetText: string | null; description: string }[] {
     const lines = response.split("\n");
-    const steps: string[] = [];
-    const stepPattern = /^Step \d+:\s*(.*)/;
+    const stepPattern = /^Step \d+:\s*(.*)\|\s*Target:\s*(.*)$/i;
+    const steps: { targetText: string | null; description: string }[] = [];
 
     for (const line of lines) {
       const match = line.trim().match(stepPattern);
       if (match) {
-        // Remove all backslashes before quotes
-        const stepContent = match[1].trim().replace(/\\/g, "");
-        steps.push(stepContent);
+        const description = match[1].trim();
+        let targetText: string | null = match[2].trim();
+        if (
+          targetText.toLowerCase() === "none" ||
+          targetText.toLowerCase() === "null"
+        ) {
+          targetText = null;
+        }
+        steps.push({ description, targetText });
       }
     }
 
     return steps;
-  }
-
-  private parseCoordinatesFromResponse(response: string): string[] {
-    const lines = response.split("\n");
-    const coordinates: string[] = [];
-    const coordinatePattern = /^Element \d+:\s*(.*)/;
-    let inCoordinatesSection = false;
-
-    for (const line of lines) {
-      const trimmedLine = line.trim();
-
-      // Check if we're entering the coordinates section
-      if (trimmedLine === "**Coordinates:**") {
-        inCoordinatesSection = true;
-        continue;
-      }
-
-      // Check if we're exiting the coordinates section (entering another section)
-      if (trimmedLine.startsWith("**") && trimmedLine !== "**Coordinates:**") {
-        inCoordinatesSection = false;
-        continue;
-      }
-
-      if (inCoordinatesSection) {
-        const coordinateMatch = trimmedLine.match(coordinatePattern);
-        if (coordinateMatch) {
-          const coordinateContent = coordinateMatch[1]
-            .trim()
-            .replace(/\\/g, "");
-          coordinates.push(coordinateContent);
-        }
-      }
-    }
-
-    return coordinates;
   }
 }
 

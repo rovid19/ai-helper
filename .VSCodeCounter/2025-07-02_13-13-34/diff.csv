@@ -1,0 +1,26 @@
+"filename", "language", "TypeScript", "TypeScript JSX", "XML", "CSS", "JavaScript", "comment", "blank", "total"
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/config/constants.js", "JavaScript", 0, 0, 0, 0, -14, -1, -3, -18
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/main.js", "JavaScript", 0, 0, 0, 0, -122, -16, -21, -159
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/preload.js", "JavaScript", 0, 0, 0, 0, -44, -4, -9, -57
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/services/appDetection.js", "JavaScript", 0, 0, 0, 0, -40, -9, -7, -56
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/services/hotReload.js", "JavaScript", 0, 0, 0, 0, -27, -6, -6, -39
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/services/screenshot.js", "JavaScript", 0, 0, 0, 0, -21, -7, -6, -34
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/services/screenshotWatcher.js", "JavaScript", 0, 0, 0, 0, -69, -2, -10, -81
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/services/shortcuts.js", "JavaScript", 0, 0, 0, 0, -38, -11, -11, -60
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/utils/helpers.js", "JavaScript", 0, 0, 0, 0, 0, 0, -1, -1
+"/Users/rock/Documents/Projekti/ai-helper/no-name/electron/utils/index.js", "JavaScript", 0, 0, 0, 0, -1, -1, -1, -3
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/App.css", "CSS", 0, 0, 0, 1, 0, 0, 1, 2
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/App.tsx", "TypeScript JSX", 0, 31, 0, 0, 0, 0, 5, 36
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/assets/images/sendIcon.svg", "XML", 0, 0, 4, 0, 0, 0, 1, 5
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/components/chatUi.tsx", "TypeScript JSX", 0, 78, 0, 0, 0, 10, 19, 107
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/components/deepLens.tsx", "TypeScript JSX", 0, 28, 0, 0, 0, 0, 5, 33
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/hooks/useAppDetection.tsx", "TypeScript JSX", 0, 30, 0, 0, 0, 0, 8, 38
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/index.css", "CSS", 0, 0, 0, 4, 0, 0, 2, 6
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/main.tsx", "TypeScript JSX", 0, 4, 0, 0, 0, 0, 2, 6
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/services/deepLens.ts", "TypeScript", 118, 0, 0, 0, 0, 10, 26, 154
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/services/imageRecgonition/tesseractService.ts", "TypeScript", 82, 0, 0, 0, 0, 4, 21, 107
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/services/openAi/chatGpt.ts", "TypeScript", 145, 0, 0, 0, 0, 1, 20, 166
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/services/openAi/prompts.ts", "TypeScript", 55, 0, 0, 0, 0, 0, 17, 72
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/stores/stepStore.ts", "TypeScript", 21, 0, 0, 0, 0, 0, 6, 27
+"/Users/rock/Documents/Projekti/ai-helper/no-name/src/vite-env.d.ts", "TypeScript", 12, 0, 0, 0, 0, 1, 2, 15
+"Total", "-", 433, 171, 4, 5, -376, -31, 60, 266

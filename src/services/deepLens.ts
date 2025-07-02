@@ -36,8 +36,6 @@ export class DeepLensService {
           size,
           analysis: [], // Placeholder for actual analysis comparison
         });
-
-        console.log(`Quality ${quality}: ${size} bytes`);
       } catch (error) {
         console.error(`Error testing quality ${quality}:`, error);
       }
@@ -79,21 +77,6 @@ export class DeepLensService {
 
           // Extract just the base64 part (remove data:image/jpeg;base64, prefix)
           const base64Data = optimizedBase64.split(",")[1];
-
-          console.log(
-            `Image optimized: ${img.width}x${img.height} -> ${newWidth}x${newHeight}`
-          );
-          console.log(
-            `Original size: ~${Math.round(base64Image.length * 0.75)} bytes`
-          );
-          console.log(
-            `Optimized size: ~${Math.round(base64Data.length * 0.75)} bytes`
-          );
-          console.log(
-            `Size reduction: ~${Math.round(
-              (1 - base64Data.length / base64Image.length) * 100
-            )}%`
-          );
 
           resolve(base64Data);
         } catch (error) {

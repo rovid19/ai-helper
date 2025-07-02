@@ -9,12 +9,14 @@ import {
 } from "./services/shortcuts.js";
 import { setupHotReload } from "./services/hotReload.js";
 import { captureScreenshot } from "./services/screenshot.js";
+import ScreenshotWatcherService from "./services/screenshotWatcher.js";
 import { DEVELOPMENT, WINDOW_CONFIG } from "./config/constants.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let win; // Store window reference globally
+let screenshotWatcherService = new ScreenshotWatcherService();
 
 // Register IPC handlers at module level
 ipcMain.handle("capture-screenshot", async () => {
@@ -58,6 +60,24 @@ ipcMain.handle("launch-native-overlay", async () => {
     "../native/Ai Overlay Instructions.app"
   );
   spawn("open", [overlayAppPath]);
+
+  setTimeout(() => {
+    screenshotWatcherService.startWatching(
+      ({ screenshotBase64, metadata }) => {
+        console.log("screenshot-update main.js");
+        if (win && !win.isDestroyed()) {
+          console.log(screenshotBase64, metadata);
+          win.webContents.send("screenshot-update", screenshotBase64, metadata);
+        }
+      },
+      () => {
+        console.log("Native overlay closed, clearing step store");
+        if (win && !win.isDestroyed()) {
+          win.webContents.send("clear-step-store");
+        }
+      }
+    );
+  }, 500);
 });
 
 async function createWindow() {
@@ -128,4 +148,5 @@ app.on("activate", () => {
 app.on("will-quit", () => {
   app.isQuiting = true;
   globalShortcut.unregisterAll();
+  screenshotWatcherService.stopWatching();
 });

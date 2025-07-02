@@ -23,7 +23,7 @@ export const captureScreenshot = async (win) => {
     // Extract just the base64 part (remove data:image/png;base64, prefix)
     const base64Data = base64Image.split(",")[1];
 
-    win.hide();
+    //win.hide();
     console.log("Screenshot captured successfully");
     return base64Data;
   } catch (error) {

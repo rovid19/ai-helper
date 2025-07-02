@@ -12,6 +12,18 @@ contextBridge.exposeInMainWorld("electronAPI", {
       callback(data);
     });
   },
+
+  onScreenshotUpdate: (callback) => {
+    console.log("preload.js onScreenshotUpdate");
+    // Remove any existing listeners first
+    ipcRenderer.removeAllListeners("screenshot-update");
+
+    // Add the new listener
+    ipcRenderer.on("screenshot-update", (event, screenshotBase64, metadata) => {
+      callback(screenshotBase64, metadata);
+    });
+  },
+
   captureScreenshot: async () => {
     try {
       const result = await ipcRenderer.invoke("capture-screenshot");
@@ -22,9 +34,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
       throw error;
     }
   },
+
   launchNativeOverlay: async () => {
     await ipcRenderer.invoke("launch-native-overlay");
   },
+
   writeStepsToFile: async (steps) => {
     try {
       const result = await ipcRenderer.invoke("write-steps-to-file", steps);
@@ -34,5 +48,16 @@ contextBridge.exposeInMainWorld("electronAPI", {
       console.error("Error in preload writeStepsToFile:", error);
       throw error;
     }
+  },
+
+  onClearStepStore: (callback) => {
+    // Remove any existing listeners first
+    ipcRenderer.removeAllListeners("clear-step-store");
+
+    // Add the new listener
+    ipcRenderer.on("clear-step-store", () => {
+      console.log("Preload received clear step store signal");
+      callback();
+    });
   },
 });
