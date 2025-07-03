@@ -1,5 +1,6 @@
 import Prompts from "./prompts";
 import { useStepStore } from "../../stores/stepStore";
+import Prompt1 from "./prompt1";
 
 class ChatGPTService {
   private apiKey: string = import.meta.env.VITE_OPENAI_API_KEY;
@@ -133,7 +134,7 @@ class ChatGPTService {
       throw new Error("Unexpected API response structure");
     }
 
-    const steps = this.parseStepsWithTargetText(
+    const steps = ChatGPTService.parseStepsWithTargetText(
       data.choices[0].message.content
     );
     console.log("Parsed steps:", steps);
@@ -141,7 +142,8 @@ class ChatGPTService {
     return steps;
   }
 
-  private parseStepsWithTargetText(
+  // Change to public static so it can be used outside
+  public static parseStepsWithTargetText(
     response: string
   ): { targetText: string | null; description: string }[] {
     const lines = response.split("\n");
@@ -163,6 +165,37 @@ class ChatGPTService {
       }
     }
 
+    return steps;
+  }
+
+  // New method: create thread, send screenshot and prompt, get steps
+  async analyzeWithAssistantApi(
+    assistantApiService: any, // expects an instance of AssistantApiService
+    screenshotBase64: string,
+    userQuestion: string
+  ): Promise<{ targetText: string | null; description: string }[]> {
+    // 1. Create a new thread
+    await assistantApiService.createThread();
+    // 2. Generate the initial prompt
+    const prompt = Prompt1.getInitialPrompt(userQuestion);
+    // 3. Send the screenshot and prompt as a message
+    await assistantApiService.sendMessage(prompt, screenshotBase64);
+    // 4. Run the assistant and get the response
+    const responseContent = await assistantApiService.runAndGetResponse();
+    console.log("Response from assistant", responseContent);
+    // 5. Parse the response using the existing parser
+    const steps = ChatGPTService.parseStepsWithTargetText(
+      Array.isArray(responseContent) &&
+        responseContent.length > 0 &&
+        responseContent[0].text
+        ? responseContent[0].text.value || responseContent[0].text
+        : typeof responseContent === "string"
+        ? responseContent
+        : ""
+    );
+
+    useStepStore.getState().setSteps(steps);
+    console.log("Steps from assistant", steps);
     return steps;
   }
 }

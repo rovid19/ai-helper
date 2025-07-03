@@ -7,6 +7,8 @@ import ChatGPTService from "../services/openAi/chatGpt";
 import DeepLens from "./deepLens";
 import { DeepLensService } from "../services/deepLens.ts";
 import useAppDetection from "../hooks/useAppDetection.tsx";
+import { AssistantApiService } from "../services/openAi/assistantApi.ts";
+import { useAssistantApiStore } from "../stores/assistantApiStore";
 
 const chatUi = () => {
   const activeApp = useAppDetectionStore((state) => state.activeApp);
@@ -14,6 +16,8 @@ const chatUi = () => {
   const setUserQuestion = useStepStore((state) => state.setUserQuestion);
   const [userInput, setUserInput] = useState("");
   const [isDeepLensOn, setIsDeepLensOn] = useState(false);
+  const { assistantApiService, setAssistantApiService } =
+    useAssistantApiStore();
 
   useAppDetection();
 
@@ -42,15 +46,24 @@ const chatUi = () => {
         ? await new DeepLensService().analyzeImage()
         : null;
 
+      // Use AssistantApiService from store, or create and save if not present
+      let assistantService = assistantApiService;
+      if (!assistantService) {
+        assistantService = new AssistantApiService(
+          "asst_1lB6aX4mqTaz3ozNXnlldp9l"
+        );
+        await assistantService.createThread();
+        setAssistantApiService(assistantService);
+      }
+
       // Create ChatGPT service instance
       const chatGPT = new ChatGPTService();
 
       // Make the API request with context
-      const steps = await chatGPT.analyze(
-        screenShot,
-        userInput,
-        activeApp || undefined,
-        activeWebApp || undefined
+      const steps = await chatGPT.analyzeWithAssistantApi(
+        assistantService,
+        screenShot || "",
+        userInput
       );
 
       // Start the native overlay
@@ -58,6 +71,8 @@ const chatUi = () => {
 
       // Write steps to /tmp/overlay_steps.json for the native overlay
       await window.electronAPI.writeStepsToFile(steps);
+
+      console.log("Steps from first call", steps);
 
       // Clear the input after successful request
       setUserInput("");
