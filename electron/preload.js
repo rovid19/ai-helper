@@ -19,9 +19,12 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.removeAllListeners("screenshot-update");
 
     // Add the new listener
-    ipcRenderer.on("screenshot-update", (event, screenshotBase64, metadata) => {
-      callback(screenshotBase64, metadata);
-    });
+    ipcRenderer.on(
+      "screenshot-update",
+      (event, screenshotBase64, metadata, userQuestion) => {
+        callback(metadata, userQuestion);
+      }
+    );
   },
 
   captureScreenshot: async () => {

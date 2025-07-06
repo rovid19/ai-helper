@@ -3,7 +3,7 @@ import { useStepStore } from "../../stores/stepStore";
 import Prompt1 from "./prompt1";
 
 class ChatGPTService {
-  private apiKey: string = import.meta.env.VITE_OPENAI_API_KEY;
+  /* private apiKey: string = import.meta.env.VITE_OPENAI_API_KEY;
   private contextPrompt: string = "";
   private deepLens: boolean = false;
   //private useMock: boolean = true; // Set to false to use real API
@@ -141,7 +141,7 @@ class ChatGPTService {
     useStepStore.getState().setSteps(steps);
     return steps;
   }
-
+*/
   // Change to public static so it can be used outside
   public static parseStepsWithTargetText(
     response: string

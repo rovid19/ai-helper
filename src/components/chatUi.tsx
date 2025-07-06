@@ -69,10 +69,12 @@ const chatUi = () => {
       // Start the native overlay
       await window.electronAPI.launchNativeOverlay();
 
-      // Write steps to /tmp/overlay_steps.json for the native overlay
-      await window.electronAPI.writeStepsToFile(steps);
-
       console.log("Steps from first call", steps);
+
+      // Log the full thread for debugging
+      if (assistantService && assistantService.logThreadMessages) {
+        await assistantService.logThreadMessages();
+      }
 
       // Clear the input after successful request
       setUserInput("");

@@ -1,7 +1,7 @@
 import { useStepStore } from "../../stores/stepStore";
 
 class Prompts {
-  private promptType: "activeWebApp" | "activeApp" | "userStuck";
+  /*private promptType: "activeWebApp" | "activeApp" | "userStuck";
 
   constructor(type: "activeWebApp" | "activeApp" | "userStuck") {
     this.promptType = type;
@@ -114,7 +114,7 @@ ${this.structureResponsePrompt()}`;
     }
 
     return `${contextPrompt}\n${this.structureResponsePrompt()}`;
-  }
+  }*/
 }
 
 export default Prompts;

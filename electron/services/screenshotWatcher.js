@@ -1,14 +1,16 @@
 import fs from "fs";
 
-class ScreenshotWatcherService {
+class WatcherService {
   constructor() {
     this.screenshotPath = "/tmp/screenshot.jpg";
     this.metadataPath = "/tmp/screenshot_metadata.json";
     this.signalPath = "/tmp/native_overlay_signal.json";
+    this.userQuestionPath = "/tmp/user_question.json";
     this.screenshotDebounceTimer = null;
     this.screenshotWatcher = null;
     this.metadataWatcher = null;
     this.signalWatcher = null;
+    this.userQuestionWatcher = null;
     this.onScreenshotUpdate = null;
     this.onOverlayClosed = null;
   }
@@ -30,8 +32,11 @@ class ScreenshotWatcherService {
     if (this.signalWatcher) {
       fs.unwatchFile(this.signalPath, this.signalWatcher);
     }
+    if (this.userQuestionWatcher) {
+      fs.unwatchFile(this.userQuestionPath, this.userQuestionWatcher);
+    }
 
-    // Shared handler for both files
+    // Shared handler for screenshot, metadata, and user question
     const handleUpdate = () => {
       if (this.screenshotDebounceTimer) {
         clearTimeout(this.screenshotDebounceTimer);
@@ -43,11 +48,26 @@ class ScreenshotWatcherService {
           const metadata = JSON.parse(
             fs.readFileSync(this.metadataPath, "utf-8")
           );
+          let userQuestion = null;
+          try {
+            userQuestion = fs.existsSync(this.userQuestionPath)
+              ? fs.readFileSync(this.userQuestionPath, "utf-8")
+              : null;
+          } catch (e) {
+            userQuestion = null;
+          }
           if (this.onScreenshotUpdate) {
-            this.onScreenshotUpdate({ screenshotBase64, metadata });
+            this.onScreenshotUpdate({
+              screenshotBase64,
+              metadata,
+              userQuestion,
+            });
           }
         } catch (error) {
-          console.error("Error reading screenshot or metadata file:", error);
+          console.error(
+            "Error reading screenshot, metadata, or user question file:",
+            error
+          );
         }
       }, 100);
     };
@@ -62,6 +82,13 @@ class ScreenshotWatcherService {
     this.metadataWatcher = (curr, prev) => {
       if (curr.mtime > prev.mtime) {
         console.log("New metadata detected from Swift overlay");
+        handleUpdate();
+      }
+    };
+
+    this.userQuestionWatcher = (curr, prev) => {
+      if (curr.mtime > prev.mtime) {
+        console.log("New user question detected from Swift overlay");
         handleUpdate();
       }
     };
@@ -83,6 +110,7 @@ class ScreenshotWatcherService {
     fs.watchFile(this.screenshotPath, this.screenshotWatcher);
     fs.watchFile(this.metadataPath, this.metadataWatcher);
     fs.watchFile(this.signalPath, this.signalWatcher);
+    fs.watchFile(this.userQuestionPath, this.userQuestionWatcher);
   }
 
   stopWatching() {
@@ -98,6 +126,10 @@ class ScreenshotWatcherService {
       fs.unwatchFile(this.signalPath, this.signalWatcher);
       this.signalWatcher = null;
     }
+    if (this.userQuestionWatcher) {
+      fs.unwatchFile(this.userQuestionPath, this.userQuestionWatcher);
+      this.userQuestionWatcher = null;
+    }
     if (this.screenshotDebounceTimer) {
       clearTimeout(this.screenshotDebounceTimer);
       this.screenshotDebounceTimer = null;
@@ -107,4 +139,4 @@ class ScreenshotWatcherService {
   }
 }
 
-export default ScreenshotWatcherService;
+export default WatcherService;

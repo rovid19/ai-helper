@@ -9,14 +9,14 @@ import {
 } from "./services/shortcuts.js";
 import { setupHotReload } from "./services/hotReload.js";
 import { captureScreenshot } from "./services/screenshot.js";
-import ScreenshotWatcherService from "./services/screenshotWatcher.js";
+import WatcherService from "./services/screenshotWatcher.js";
 import { DEVELOPMENT, WINDOW_CONFIG } from "./config/constants.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let win; // Store window reference globally
-let screenshotWatcherService = new ScreenshotWatcherService();
+let screenshotWatcherService = new WatcherService();
 
 // Register IPC handlers at module level
 ipcMain.handle("capture-screenshot", async () => {
@@ -63,11 +63,16 @@ ipcMain.handle("launch-native-overlay", async () => {
 
   setTimeout(() => {
     screenshotWatcherService.startWatching(
-      ({ screenshotBase64, metadata }) => {
+      ({ screenshotBase64, metadata, userQuestion }) => {
         console.log("screenshot-update main.js");
         if (win && !win.isDestroyed()) {
-          console.log(screenshotBase64, metadata);
-          win.webContents.send("screenshot-update", screenshotBase64, metadata);
+          console.log(screenshotBase64, metadata, userQuestion);
+          win.webContents.send(
+            "screenshot-update",
+            screenshotBase64,
+            metadata,
+            userQuestion
+          );
         }
       },
       () => {

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import ChatUi from "./components/chatUi";
 import ChatGPTService from "./services/openAi/chatGpt";
-import { useStepStore } from "./stores/stepStore";
+import { useStepStore, type Step } from "./stores/stepStore";
 import { useAppDetectionStore } from "./stores/appDetectionStore";
 import { useAssistantApiStore } from "./stores/assistantApiStore";
 import { AssistantApiService } from "./services/openAi/assistantApi";
@@ -15,10 +15,23 @@ const App = () => {
     setCurrentStepIndex,
     setSteps,
     currentStepIndex,
+    userQuestion,
+    userOptionalQuestion,
+    setUserOptionalQuestion,
   } = useStepStore();
   const activeApp = useAppDetectionStore((state) => state.activeApp);
   const activeWebApp = useAppDetectionStore((state) => state.activeWebApp);
   const { assistantApiService } = useAssistantApiStore();
+
+  useEffect(() => {
+    // Write steps to /tmp/overlay_steps.json for the native overlay
+    const sendStepsToNativeOverlay = async () => {
+      if (steps && steps.length > 0) {
+        await window.electronAPI.writeStepsToFile(steps);
+      }
+    };
+    sendStepsToNativeOverlay();
+  }, [steps]);
 
   useEffect(() => {
     const resumeAssistantChat = async () => {
@@ -31,10 +44,11 @@ const App = () => {
       ) {
         console.log(steps[currentStepIndex]);
         // Compose stuck prompt
-        const stuckPrompt = `User got stuck on step ${currentStepIndex}. Analyze the user's screenshot to determine why they got stuck 
-        (most likely, the UI element you suggested is not visible to the user). 
-        Continue the tutorial from this step, but this time,
-         only provide steps that use elements you can actually see in the user's screenshot. For each step, instruct the user to click on something that is clearly visible in the screenshot.`;
+        const stuckPrompt = `User got stuck on step ${currentStepIndex + 1}: "${
+          steps[currentStepIndex].description
+        }". Analyze the user's screenshot to determine why they got stuck (most likely, the UI element you suggested is not visible to the user). Then, continue the tutorial from this step all the way to the user's goal: "${userQuestion}". Provide all remaining steps in the same step-by-step format as before, starting from step ${
+          currentStepIndex + 1
+        }. Do not skip any steps.`;
         // Send stuck message and screenshot to assistant
         console.log(stuckPrompt);
         await assistantApiService.sendMessage(stuckPrompt, screenshotBase64);
@@ -63,6 +77,10 @@ const App = () => {
         console.log("Steps from resuming convo", steps2);
         // Store steps in your state/store as needed
         setSteps(steps2);
+        // Log the full thread for debugging
+        if (assistantApiService && assistantApiService.logThreadMessages) {
+          await assistantApiService.logThreadMessages();
+        }
         console.log("Steps from zustand store after resuming convo", steps);
       }
     };
@@ -81,9 +99,16 @@ const App = () => {
   useEffect(() => {
     if (window.electronAPI) {
       (window.electronAPI as any).onScreenshotUpdate(
-        (screenshotBase64: string, metadata: any) => {
+        (
+          screenshotBase64: string,
+          metadata: any,
+          userOptionalQuestion: string | null
+        ) => {
           setScreenshotBase64(screenshotBase64);
           setCurrentStepIndex(metadata.stepIndex);
+          setUserOptionalQuestion(userOptionalQuestion);
+          console.log("userOptionalQuestion", userOptionalQuestion);
+          console.log("metadata", metadata);
         }
       );
     }

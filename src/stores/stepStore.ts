@@ -11,11 +11,13 @@ interface StepState {
   screenshotBase64: string | null;
   userStuckOn: Step | null;
   userQuestion: string | null;
+  userOptionalQuestion: string | null;
 
   setSteps: (steps: Step[] | null) => void;
   setCurrentStepIndex: (index: number | null) => void;
   setScreenshotBase64: (screenshot: string | null) => void;
   setUserQuestion: (question: string | null) => void;
+  setUserOptionalQuestion: (question: string | null) => void;
 }
 
 export const useStepStore = create<StepState>((set, get) => ({
@@ -24,8 +26,9 @@ export const useStepStore = create<StepState>((set, get) => ({
   screenshotBase64: null,
   userStuckOn: null,
   userQuestion: null,
+  userOptionalQuestion: null,
 
-  setSteps: (newSteps: Step[] | null) =>
+  setSteps: (newSteps: Step[] | null) => {
     set((state) => {
       // If currentStepIndex exists, combine old and new steps
       if (state.currentStepIndex) {
@@ -33,6 +36,9 @@ export const useStepStore = create<StepState>((set, get) => ({
           0,
           state.currentStepIndex
         );
+        console.log("old steps", oldSteps);
+        console.log("new steps", newSteps);
+        console.log([...oldSteps, ...(newSteps as Step[])]);
         return {
           steps: [...oldSteps, ...(newSteps as Step[])],
           currentStepIndex: state.currentStepIndex,
@@ -43,7 +49,8 @@ export const useStepStore = create<StepState>((set, get) => ({
         steps: newSteps,
         currentStepIndex: 0,
       };
-    }),
+    });
+  },
 
   // Updates both the current step index and tracks which step the user is stuck on.
   // If index is valid, sets userStuckOn to that step, otherwise sets it to null
@@ -56,4 +63,6 @@ export const useStepStore = create<StepState>((set, get) => ({
   },
   setScreenshotBase64: (screenshot) => set({ screenshotBase64: screenshot }),
   setUserQuestion: (question) => set({ userQuestion: question }),
+  setUserOptionalQuestion: (question) =>
+    set({ userOptionalQuestion: question }),
 }));

@@ -1,7 +1,7 @@
 export class DeepLensService {
   // Change this value to test different JPEG qualities (0.0 - 1.0)
-  private readonly JPEG_QUALITY = 0.7;
-  private readonly MAX_WIDTH = 1000; // Start with 800px width
+  private readonly JPEG_QUALITY = 1;
+  private readonly MAX_WIDTH = 1400; // Start with 800px width
   private readonly QUALITY_LEVELS = [0.8, 0.6, 0.4, 0.2]; // JPEG quality levels to test
 
   async analyzeImage(): Promise<string> {

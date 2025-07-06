@@ -82,4 +82,26 @@ export class AssistantApiService {
     const lastMsg = messages.data.find((msg) => msg.role === "assistant");
     return lastMsg?.content;
   }
+
+  // Retrieve and log all messages in the current thread
+  async logThreadMessages() {
+    if (!this.threadId) {
+      console.warn("No threadId set in AssistantApiService");
+      return;
+    }
+    try {
+      const messages = await openai.beta.threads.messages.list(this.threadId);
+      messages.data.forEach((msg, idx) => {
+        console.log(`Message #${messages.data.length - idx}:`);
+        console.log("Role:", msg.role);
+        console.log("Content:", msg.content);
+        if (msg.attachments) {
+          console.log("Attachments:", msg.attachments);
+        }
+      });
+      return messages;
+    } catch (error) {
+      console.error("Error retrieving thread messages:", error);
+    }
+  }
 }
